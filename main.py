@@ -1,16 +1,86 @@
-# This is a sample Python script.
+import random
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+list_par_len = []
+list_par_anag = []
+parola1 = 'trota'
+parola2 = ''
+diz = {}
+
+def init():
+    f = open('./Parole/parole.txt')  # dentro ci va il path del file
+    linee = f.readlines()  # legge tutte le linee del file e le carica in una lista di linee
+    for l in linee:
+        l = l.strip()
+        diz[l] = len(l)
+    print(diz)
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+def controllo(parola):
+    for par in sorted(diz):
+        if diz[par] == len(parola) and par != parola:
+            list_par_len.append(par)
+    print(list_par_len)
+    anagramma(parola)
 
 
-# Press the green button in the gutter to run the script.
+
+def anagramma(parola):
+    for par in list_par_len: #prendo ogni parola della lista
+        trovato = False
+        for lettera in par: #prendo ogni lettera di ogni parola della lista
+            if lettera in parola:
+                trovato = True
+            else:
+                break
+        if trovato:
+            list_par_anag.append(par)
+    print(list_par_anag)
+
+
+
+
+
+
+def trova_anagrammi_non_funziona(parola):
+    if len(parola) == 1:
+        return [parola]
+
+    anagrammi = []
+    for lettera in parola:
+        restante = [x for x in parola if x != lettera]
+        sottoparole = trova_anagrammi(restante)
+        for sottoparola in sottoparole:
+            par = ''.join(sottoparola)
+            print(lettera+par)
+            l = ''.join([lettera,par])
+            anagrammi.append(lettera+par)
+
+    return anagrammi
+
+anagrammi = []
+def trova_anagrammi(parola, prefisso=""):
+    if len(parola) <= 1:
+        par = prefisso + parola
+        if par not in anagrammi:
+            anagrammi.append(prefisso + parola)
+    else:
+        for i in range(len(parola)):
+            rimanenti = parola[:i] + parola[i+1:]
+            trova_anagrammi(rimanenti, prefisso + parola[i])
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    init()
+    controllo(parola1)
+    #parola = input("Inserisci una parola: ")
+    parola = parola1
+    trova_anagrammi(parola)
+    print("Gli anagrammi di", parola, "sono:", anagrammi)
+    print(len(anagrammi))
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+
+
+
+
+
+
