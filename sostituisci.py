@@ -1,6 +1,8 @@
+from typing import List, Any
+
 alfabeto = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 parola1 = 'firma'
-parola2 = 'smembrerai'
+parola2 = 'servizi'
 diz = {}
 list_trovate = []
 
@@ -12,34 +14,29 @@ def init():
         diz[l] = len(l)
     #print(diz)
 
-def aggiungi(parola):
-    i_spazio = 1
-    parola = ' ' + parola
+def sostituisci(parola):
     for i in range(len(parola)):
         for l in alfabeto:
-            new_par = parola.replace(' ', l)
-            #print(new_par)
-            if new_par in diz and new_par not in list_trovate:
-                list_trovate.append(new_par)
+            par = list(parola)
+            par[i] = l
+            par = ''.join(par)
+            print(par)
 
-        parola = trasla(i_spazio, parola)
-        i_spazio += 1
+            if par in diz and par not in list_trovate:
+                list_trovate.append(par)
 
-def trasla(i_spazio, parola):
-    listpar = list(parola)
-    listpar.remove(' ')
-    listpar.insert(i_spazio, ' ')
-    par = ''.join(listpar)
-    return par
+
 
 
 
 if __name__ == '__main__':
     init()
-    aggiungi(parola1)
+    sostituisci(parola1)
     print(list_trovate)
     f = open("./Parole/trovate.txt", "a")
     for par in list_trovate:
         f.write(par + '\n')
     f.close()
+
+
 

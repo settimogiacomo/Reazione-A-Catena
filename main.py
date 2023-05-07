@@ -2,12 +2,12 @@
 alfabeto = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 list_par_len = []
 list_par_anag = []
-parola1 = 'trota'
+parola1 = 'firma'
 parola2 = ''
 diz = {}
 
 def init():
-    f = open('./Parole/parole.txt')  # dentro ci va il path del file
+    f = open('./Parole/parole_difficili.txt')  # dentro ci va il path del file
     linee = f.readlines()  # legge tutte le linee del file e le carica in una lista di linee
     for l in linee:
         l = l.strip()
@@ -61,7 +61,7 @@ anagrammi = []
 def trova_anagrammi(parola, prefisso=""):
     if len(parola) <= 1:
         par = prefisso + parola
-        if par not in anagrammi:
+        if par not in anagrammi and par in diz:
             anagrammi.append(prefisso + parola)
     else:
         for i in range(len(parola)):
@@ -79,10 +79,7 @@ if __name__ == '__main__':
     if parola1 in anagrammi:
         print("Trovato anagramma")
 
-
-
-
-
-
-
-
+    f = open("./Parole/trovate.txt", "a")
+    for par in anagrammi:
+        f.write(par + '\n')
+    f.close()
