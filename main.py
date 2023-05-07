@@ -1,5 +1,5 @@
-import random
-
+#import random, da cancellare??
+alfabeto = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 list_par_len = []
 list_par_anag = []
 parola1 = 'trota'
@@ -76,6 +76,8 @@ if __name__ == '__main__':
     trova_anagrammi(parola)
     print("Gli anagrammi di", parola, "sono:", anagrammi)
     print(len(anagrammi))
+    if parola1 in anagrammi:
+        print("Trovato anagramma")
 
 
 
