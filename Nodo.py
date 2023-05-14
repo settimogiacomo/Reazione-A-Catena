@@ -1,7 +1,7 @@
 from Metodo import Metodo
 class Nodo:
-    def __init__(self,radice,algoritmo):
-        self.algoritmo :Metodo = algoritmo #algoritmo usato per generare la parola
+    def __init__(self, radice, algoritmo):
+        self.algoritmo : Metodo = algoritmo #algoritmo usato per generare la parola, enum
         self.radice = radice
         self.figli = []
 
@@ -16,11 +16,3 @@ class Nodo:
 
     def add_figlio(self, nodoObj):
         self.figli.append(nodoObj) #oggetto nodo
-
-
-
-
-
-
-
-
