@@ -20145,6 +20145,7 @@ firme
 firmera
 firmerai
 firmeranno
+lago
 firmerebbe
 firmerei
 firmeremmo

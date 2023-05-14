@@ -10,7 +10,9 @@ class Algoritmi:
         self.parola2 = ''
         self.diz = {}
         self.diz_trovate = {}
-        self.albero : Nodo = None
+        self.albero: Nodo = None
+        self.conta = 0
+        self.diz_livelli = {}
 
     def caricaDizionario(self):
         f = open('./Parole/parole_difficili.txt')  # dentro ci va il path del file
@@ -35,24 +37,39 @@ class Algoritmi:
                 trovate = True
         if trovate:
             print(self.parola1, self.parola2)
-            self.albero = Nodo(self.parola1, Metodo.NESSUNO)
+            self.albero = Nodo(self.parola1)
 
-    def calcolaPercorsi(self, nodo : Nodo):
-        if str(nodo) != '' and str(nodo) != self.parola2:
-            self.trova_anagrammi(str(nodo))
-            self.sostituisci(str(nodo))
-            self.aggiungi(str(nodo))
-            self.togli(str(nodo))
-            #print(self.diz_trovate)
-            for figlio in sorted(self.diz_trovate):
-                p = Nodo(figlio,self.diz_trovate[figlio])
-                nodo.add_figlio(p)
-            self.diz_trovate = {}
-            for nodoObj in nodo.figli:
-                self.calcolaPercorsi(nodoObj)
-        else:
-            print('trovato percorso', self.parola2)
+    def calcolaPercorsi(self, node: Nodo):
+        coda = [node]
+        while coda:
+            for i in range(len(coda)):
+                nodo = coda.pop(0)
+                #print('nodo:',str(nodo))
+                if str(nodo) != self.parola2:
+                    self.trova_anagrammi(str(nodo))
+                    #print('anagrammi:',self.diz_trovate)
+                    self.sostituisci(str(nodo))
+                    #print('sostituisci:', self.diz_trovate)
+                    self.aggiungi(str(nodo))
+                    self.togli(str(nodo))
+                    #print('diz_trovate:',self.diz_trovate)
+                    for figlio in self.diz_trovate:
+                        p = Nodo(figlio, self.diz_trovate[figlio])
+                        nodo.add_figlio(p)
+                    self.diz_trovate = {}
+                    for nodoObj in nodo.figli:
+                        coda.append(nodoObj)
+                else:
+                    break
+            else:
+                continue
+            break
 
+    def vediAlbero(self, nodo: Nodo, indentazione=''):
+        if nodo:
+            print(indentazione, nodo, nodo.algoritmo)
+            for elem in nodo.figli:
+                self.vediAlbero(elem, indentazione + ' - ')
 
     def aggiungiTrovate(self):
         # trovare il nodo giusto
@@ -61,24 +78,24 @@ class Algoritmi:
 
     def trova_anagrammi(self,parola, prefisso=""):
         if len(parola) <= 1:
-            par = prefisso + parola
-            if par in self.diz and par not in self.diz_trovate:
-                self.diz_trovate[prefisso + parola] = Metodo.ANAGRAMMA
-            else:
-                for i in range(len(parola)):
-                    rimanenti = parola[:i] + parola[i + 1:]
-                    self.trova_anagrammi(rimanenti, prefisso + parola[i])
+            new_par = prefisso + parola
+            if new_par in self.diz and new_par not in self.diz_trovate and new_par != parola and new_par != self.parola1:
+                self.diz_trovate[new_par] = Metodo.ANAGRAMMA
+        else:
+            for i in range(len(parola)):
+                rimanenti = parola[:i] + parola[i + 1:]
+                self.trova_anagrammi(rimanenti, prefisso + parola[i])
 
     def sostituisci(self, parola):
         for i in range(len(parola)):
             for l in self.alfabeto:
-                par = list(parola)
-                par[i] = l
-                par = ''.join(par)
-                #print(par)
+                new_par = list(parola)
+                new_par[i] = l
+                new_par = ''.join(new_par)
+                #print(new_par)
 
-                if par in self.diz and par not in self.diz_trovate:
-                    self.diz_trovate[par] = Metodo.SOSTITUISCI
+                if new_par in self.diz and new_par not in self.diz_trovate and new_par != parola and new_par != self.parola1:
+                    self.diz_trovate[new_par] = Metodo.SOSTITUISCI
 
     def aggiungi(self, parola):
         i_spazio = 1
@@ -87,7 +104,7 @@ class Algoritmi:
             for l in self.alfabeto:
                 new_par = parola.replace(' ', l)
                 # print(new_par)
-                if new_par in self.diz and new_par not in self.diz_trovate:
+                if new_par in self.diz and new_par not in self.diz_trovate and new_par != parola and new_par != self.parola1:
                     self.diz_trovate[new_par] = Metodo.AGGIUNGI
 
             parola = self.trasla(i_spazio, parola)
@@ -106,7 +123,7 @@ class Algoritmi:
         for i in range(len(parola)):
             new_par = self.rimuovi(i_cancella, parola)
             #print(new_par)
-            if new_par in self.diz and new_par not in self.diz_trovate:
+            if new_par in self.diz and new_par not in self.diz_trovate and new_par != parola and new_par != self.parola1:
                 self.diz_trovate[new_par] = Metodo.TOGLI
             i_cancella += 1
 
