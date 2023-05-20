@@ -7,6 +7,7 @@ class Nodo:
 
     def __str__(self):
         return self.radice
+
     def stampa(self):
         listaStampata = ''
         if self.figli:
