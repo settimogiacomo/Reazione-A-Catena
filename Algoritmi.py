@@ -21,6 +21,7 @@ class Algoritmi:
             l = l.strip()
             self.diz[l] = len(l)
 
+    # solo per terminale
     def chiediParole(self):
         print("Scrivi le parole di cui vuoi conoscere il percorso:")
         self.parola1 = input()
@@ -38,6 +39,22 @@ class Algoritmi:
         if trovate:
             print(self.parola1, self.parola2)
             self.albero = Nodo(self.parola1)
+
+    def controllaParole(self):
+        if self.parola1 not in self.diz:
+            #print(self.parola1, 'non esiste nel dizionario, riprova')
+            #self.parola1 = input()
+            return f"{self.parola1} non è nel dizionario"
+        if self.parola2 not in self.diz:
+            #print(self.parola2, 'non esiste nel dizionario, riprova')
+            #self.parola2 = input()
+            return f"{self.parola2} non è nel dizionario"
+        if self.parola1 == "" or self.parola2 == "":
+            return "Completa i campi mancanti"
+        if self.parola1 in self.diz and self.parola2 in self.diz:
+            return ""
+
+
 
     def calcolaPercorsi(self, node: Nodo):
         coda = [node]
