@@ -1,9 +1,10 @@
 from Metodo import Metodo
 class Nodo:
     def __init__(self, radice, algoritmo: Metodo = Metodo.NESSUNO):
+        self.radice = radice # stringa parola
         self.algoritmo = algoritmo #algoritmo usato per generare la parola, enum
-        self.radice = radice
         self.figli = []
+        self.genitori = []
 
     def __str__(self):
         return self.radice
