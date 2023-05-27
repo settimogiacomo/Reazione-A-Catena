@@ -14,6 +14,7 @@ class Algoritmi:
         self.albero: Nodo = None
         self.conta = 0 # TODO: NON USATO
         self.par2_at_livello = []
+        self.list_per_trov = []  #lista poercorsi trovati
 
     def caricaDizionario(self):
         f = open('./Parole/parole_difficili.txt')  # dentro ci va il path del file
@@ -91,7 +92,7 @@ class Algoritmi:
                 continue
             break
         #print('trovata ai livelli: ',self.par2_at_livello)
-        print(self.checkTrovataParola2())
+        #print(self.checkTrovataParola2())
 
     def checkTrovataParola2(self):
         if self.par2_at_livello:
@@ -101,12 +102,25 @@ class Algoritmi:
         else:
             return 'Non è stato possibile arrivare alla\nparola "' + self.parola2 + '" in ' + str(MAX_LIVELLO+1) + ' livelli'
 
-    def printAlbero(self, nodo: Nodo, indentazione=''):
+    def printAlbero(self, nodo: Nodo, indentazione=''): # debug stampa su terminale
         indentazione = self.parola1 + ' -> ' if indentazione == '' else indentazione
         if nodo:
-            print(indentazione, nodo.algoritmo)
+            #print(indentazione, nodo.algoritmo)
             for elem in nodo.figli:
                 self.printAlbero(elem, indentazione + ' ' + str(elem) + ' -> ')
+
+    def addPerTOLIST(self, nodo : Nodo): #funzione che aggiunge i percorsi completi trovati alla lista, ovvero quello che arrivano all parola2
+        if nodo:
+            if self.parola2 == str(nodo):
+                punteggio, percorso_completo = 0, []
+                for gen in nodo.genitori:
+                    punteggio += gen.algoritmo.value # int enum
+                    percorso_completo = [nodo.genitori + [nodo],  punteggio]
+                self.list_per_trov.append(percorso_completo)
+            else:
+                for elem in nodo.figli:
+                    self.addPerTOLIST(elem)
+
 
     def aggiungiTrovate(self):
         # trovare il nodo giusto

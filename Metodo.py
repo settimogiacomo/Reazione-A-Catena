@@ -1,8 +1,8 @@
 from enum import Enum
 
-class Metodo(Enum):
+class Metodo(Enum): #TODO: cambiare i numeri per il punteggio
     NESSUNO = 0
-    ANAGRAMMA = 1
+    TOGLI = 1
     AGGIUNGI = 2
     SOSTITUISCI = 3
-    TOGLI = 4
+    ANAGRAMMA = 4

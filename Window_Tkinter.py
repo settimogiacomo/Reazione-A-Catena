@@ -14,6 +14,7 @@ class Window:
         self.txtParola1.grid(row=0, column=1, columnspan=5)
         self.txtParola2 = tk.Entry(self.window, bd=1, relief="flat", width=30)
         self.txtParola2.grid(row=1, column=1, columnspan=5)
+
         self.btnCerca = tk.Button(self.window, text="Cerca", fg="green3", bg="#000")
         self.btnCerca.configure(command=self.cercaPercorso)
         self.btnCerca.grid(row=2, columnspan=2, column=1)
@@ -24,7 +25,7 @@ class Window:
         tk.Label(self.window, textvariable=self.feedback,fg='green3').grid(row=3,column=0,columnspan=6)
 
         self.lista = tk.Listbox(self.window, width=40)
-        self.lista.grid(row=6, column=0, columnspan=6)
+        self.lista.grid(row=10, column=0, columnspan=6)
 
 
 
@@ -32,19 +33,23 @@ class Window:
         self.window.mainloop()
 
     def cercaPercorso(self):  # btn
-
+        self.lista.delete(0,tk.END)
+        self.feedback.set('')
         print(self.txtParola1.get(), self.txtParola2.get())
         self.algo.parola1 = self.txtParola1.get()
         self.algo.parola2 = self.txtParola2.get()
         feedbackParole = self.algo.controllaParole()
+
         if feedbackParole == "":
             nodoInizio = Nodo(self.algo.parola1)
             self.algo.calcolaPercorsi(nodoInizio)
-            self.algo.printAlbero(nodoInizio)
+            #self.algo.printAlbero(nodoInizio) # debug terminale
+            self.algo.addPerTOLIST(nodoInizio)
+            #print(self.algo.list_per_trov[-1]) # percorso con punteggio minore = efficiente
 
             self.feedback.set(self.algo.checkTrovataParola2())
             print(nodoInizio)
-            self.stampaPercorso(nodoInizio)
+            self.stampaPercorso(nodoInizio) # listbox
             # risultato in stringa di calcolaPercorsi
         else:
             self.feedback.set(feedbackParole)
@@ -56,12 +61,18 @@ class Window:
         self.algo.albero = None
         self.algo.parola1 = ''
         self.algo.parola2 = ''
+        self.lista.delete(0,tk.END)
+        self.feedback.set('')
         return True
 
+    def creaBottoniPercorsi(self):
+        print('foo')
+        #TODO loop per creare bottoni con percorsi efficienti (magari i primi 3 + efficienti)
+
     def stampaPercorso(self, nodo:Nodo):
-        print(str(nodo), '=',self.algo.parola2)
-        if str(nodo) == self.algo.parola2 and self.lista.size() == 0:
-            print(str(nodo)+'+'+str(nodo.algoritmo))
+        #print(str(nodo), '=',self.algo.parola2)
+        if str(nodo) == self.algo.parola2: #and self.lista.size() == 0:
+            #print(str(nodo)+'+'+str(nodo.algoritmo))
             i = 0
             while i < len(nodo.genitori):
                 genitore:Nodo = nodo.genitori[i]
