@@ -14,7 +14,6 @@ class Window:
         self.txtParola1.grid(row=0, column=1, columnspan=5)
         self.txtParola2 = tk.Entry(self.window, bd=1, relief="flat", width=30)
         self.txtParola2.grid(row=1, column=1, columnspan=5)
-
         self.btnCerca = tk.Button(self.window, text="Cerca", fg="green3", bg="#000")
         self.btnCerca.configure(command=self.cercaPercorso)
         self.btnCerca.grid(row=2, columnspan=2, column=1)
@@ -45,12 +44,13 @@ class Window:
             self.algo.calcolaPercorsi(nodoInizio)
             #self.algo.printAlbero(nodoInizio) # debug terminale
             self.algo.addPerTOLIST(nodoInizio)
-            #print(self.algo.list_per_trov[-1]) # percorso con punteggio minore = efficiente
+            print(self.algo.list_per_trov) # percorso con punteggio minore = efficiente
 
             self.feedback.set(self.algo.checkTrovataParola2())
             print(nodoInizio)
             self.stampaPercorso(nodoInizio) # listbox
             # risultato in stringa di calcolaPercorsi
+            self.creaBottoniPercorsi()
         else:
             self.feedback.set(feedbackParole)
         return True
@@ -66,30 +66,55 @@ class Window:
         return True
 
     def creaBottoniPercorsi(self):
-        print('foo')
-        #TODO loop per creare bottoni con percorsi efficienti (magari i primi 3 + efficienti)
+        ROWSPAN = 4
+        index = 0
+        for elem in self.algo.list_per_trov:
+            bottone = tk.Button(self.window, text="Percorso con punteggio di: " + elem[1], fg="black", bg="yellow")
+            bottone.configure(command=self.stampaPercorso(index))
+            bottone.grid(column=0, row=ROWSPAN+index)
+            index +=1
 
-    def stampaPercorso(self, nodo:Nodo):
-        #print(str(nodo), '=',self.algo.parola2)
-        if str(nodo) == self.algo.parola2: #and self.lista.size() == 0:
-            #print(str(nodo)+'+'+str(nodo.algoritmo))
+    # def stampaPercorso(self, nodo:Nodo):
+    #     #print(str(nodo), '=',self.algo.parola2)
+    #     if str(nodo) == self.algo.parola2: #and self.lista.size() == 0:
+    #         #print(str(nodo)+'+'+str(nodo.algoritmo))
+    #         i = 0
+    #         while i < len(nodo.genitori):
+    #             genitore:Nodo = nodo.genitori[i]
+    #             self.lista.insert(tk.END, str(genitore) + ' : ' + str(genitore.algoritmo))
+    #             colore = self.scegliColore(genitore.algoritmo)
+    #             self.lista.itemconfig(tk.END, fg="#fff", bg=colore, selectbackground=colore, selectforeground="white")
+    #             if i != (len(nodo.genitori)):
+    #                 self.lista.insert(tk.END, "↓")
+    #             i += 1
+    #         self.lista.insert(tk.END, str(nodo) + ' : ' + str(nodo.algoritmo))
+    #         colore = self.scegliColore(nodo.algoritmo)
+    #         self.lista.itemconfig(tk.END, fg="#fff", bg=colore, selectbackground=colore, selectforeground="white")
+    #
+    #     else:
+    #         if nodo:
+    #             for elem in nodo.figli:
+    #                 self.stampaPercorso(elem)
+
+    def stampaPercorso(self, index):
+        self.lista.delete(0, tk.END)
+        for elem in self.algo.list_per_trov[index]:
+            listagenitori = elem[0]
             i = 0
-            while i < len(nodo.genitori):
-                genitore:Nodo = nodo.genitori[i]
+            while i < len(listagenitori):
+                genitore : Nodo = listagenitori[i]
                 self.lista.insert(tk.END, str(genitore) + ' : ' + str(genitore.algoritmo))
                 colore = self.scegliColore(genitore.algoritmo)
                 self.lista.itemconfig(tk.END, fg="#fff", bg=colore, selectbackground=colore, selectforeground="white")
-                if i != (len(nodo.genitori)):
+                if i != (len(listagenitori)):
                     self.lista.insert(tk.END, "↓")
                 i += 1
-            self.lista.insert(tk.END, str(nodo) + ' : ' + str(nodo.algoritmo))
-            colore = self.scegliColore(nodo.algoritmo)
+            self.lista.insert(tk.END, str(genitore) + ' : ' + str(genitore.algoritmo))
+            colore = self.scegliColore(genitore.algoritmo)
             self.lista.itemconfig(tk.END, fg="#fff", bg=colore, selectbackground=colore, selectforeground="white")
 
-        else:
-            if nodo:
-                for elem in nodo.figli:
-                    self.stampaPercorso(elem)
+
+
 
     def scegliColore(self, metodo:Metodo):
         match metodo:

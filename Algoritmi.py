@@ -112,10 +112,10 @@ class Algoritmi:
     def addPerTOLIST(self, nodo : Nodo): #funzione che aggiunge i percorsi completi trovati alla lista, ovvero quello che arrivano all parola2
         if nodo:
             if self.parola2 == str(nodo):
-                punteggio, percorso_completo = 0, []
+                punteggio, percorso_completo = nodo.algoritmo.value, []
                 for gen in nodo.genitori:
                     punteggio += gen.algoritmo.value # int enum
-                    percorso_completo = [nodo.genitori + [nodo],  punteggio]
+                percorso_completo = [nodo.genitori + [nodo],  punteggio]
                 self.list_per_trov.append(percorso_completo)
             else:
                 for elem in nodo.figli:
