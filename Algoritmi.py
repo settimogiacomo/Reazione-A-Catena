@@ -115,7 +115,8 @@ class Algoritmi:
                 punteggio, percorso_completo = nodo.algoritmo.value, []
                 for gen in nodo.genitori:
                     punteggio += gen.algoritmo.value # int enum
-                percorso_completo = [nodo.genitori + [nodo],  punteggio]
+                lista_percorso = nodo.genitori + [nodo]
+                percorso_completo = [lista_percorso,  punteggio]
                 self.list_per_trov.append(percorso_completo)
             else:
                 for elem in nodo.figli:

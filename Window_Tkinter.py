@@ -8,25 +8,36 @@ class Window:
         self.algo = Algoritmi()
         self.algo.caricaDizionario()
         self.window = tk.Tk()
-        tk.Label(self.window, text="Parola 1:").grid(row=0,column=0)
-        tk.Label(self.window, text="Parola 2:").grid(row=1,column=0)
-        self.txtParola1 = tk.Entry(self.window, bd=1, relief="flat", width=30)
-        self.txtParola1.grid(row=0, column=1, columnspan=5)
-        self.txtParola2 = tk.Entry(self.window, bd=1, relief="flat", width=30)
-        self.txtParola2.grid(row=1, column=1, columnspan=5)
-        self.btnCerca = tk.Button(self.window, text="Cerca", fg="green3", bg="#000")
-        self.btnCerca.configure(command=self.cercaPercorso)
+        self.window.title("Reazione a Catena")
+
+        tk.Label(self.window, text="Parola 1:").grid(row=0, column=0, pady=5, padx=10)
+        tk.Label(self.window, text="Parola 2:").grid(row=1, column=0, pady=5, padx=10)
+
+        self.txtParola1 = tk.Entry(self.window, bd=1, relief='flat',highlightthickness=1,highlightbackground="black", width=30, borderwidth=1)
+        self.txtParola1.grid(row=0, column=1, columnspan=5, pady=5, padx=5)
+
+        self.txtParola2 = tk.Entry(self.window, bd=1, relief='flat',highlightthickness=1,highlightbackground="black", width=30, borderwidth=1)
+        self.txtParola2.grid(row=1, column=1, columnspan=5, pady=5, padx=5)
+
+        self.btnCerca = tk.Button(self.window, text="Cerca", fg="#000", bg="green3", command=self.cercaPercorso, relief='ridge')
         self.btnCerca.grid(row=2, columnspan=2, column=1)
-        self.btnReset = tk.Button(self.window, text="Reset", fg="Red", bg="#000")
-        self.btnReset.configure(command=self.reset)
+
+        self.btnReset = tk.Button(self.window, text="Reset", fg="#000", bg="Red", command=self.reset, relief='ridge')
         self.btnReset.grid(row=2, columnspan=3, column=2)
+
         self.feedback = tk.StringVar(value='')
-        tk.Label(self.window, textvariable=self.feedback,fg='green3').grid(row=3,column=0,columnspan=6)
+        tk.Label(self.window, textvariable=self.feedback, fg='green3').grid(row=3, column=0, columnspan=6)
+
+        self.containerButtons = tk.Text(self.window, width=30, height=15)
+        self.containerButtons.grid(row=4, rowspan=2, column=0, columnspan=6)
+
+        self.scroll = tk.Scrollbar(self.window, orient="vertical", command=self.containerButtons.yview)
+        self.scroll.grid(row=4, rowspan=2, column=5, sticky=tk.N + tk.E + tk.S)
+
+        self.containerButtons.configure(yscrollcommand=self.scroll.set)
 
         self.lista = tk.Listbox(self.window, width=40)
-        self.lista.grid(row=10, column=0, columnspan=6)
-
-
+        self.lista.grid(row=9, column=0, columnspan=6)
 
     def start(self):
         self.window.mainloop()
@@ -44,11 +55,11 @@ class Window:
             self.algo.calcolaPercorsi(nodoInizio)
             #self.algo.printAlbero(nodoInizio) # debug terminale
             self.algo.addPerTOLIST(nodoInizio)
-            print(self.algo.list_per_trov) # percorso con punteggio minore = efficiente
+
 
             self.feedback.set(self.algo.checkTrovataParola2())
-            print(nodoInizio)
-            self.stampaPercorso(nodoInizio) # listbox
+            #print(nodoInizio)
+            #self.stampaPercorso(nodoInizio) # listbox
             # risultato in stringa di calcolaPercorsi
             self.creaBottoniPercorsi()
         else:
@@ -63,16 +74,21 @@ class Window:
         self.algo.parola2 = ''
         self.lista.delete(0,tk.END)
         self.feedback.set('')
+        self.containerButtons.delete(1.0,tk.END)
+        self.algo.list_per_trov=[]
+
         return True
 
     def creaBottoniPercorsi(self):
         ROWSPAN = 4
         index = 0
-        for elem in self.algo.list_per_trov:
-            bottone = tk.Button(self.window, text="Percorso con punteggio di: " + elem[1], fg="black", bg="yellow")
-            bottone.configure(command=self.stampaPercorso(index))
-            bottone.grid(column=0, row=ROWSPAN+index)
-            index +=1
+        for lista, punteggio in self.algo.list_per_trov:
+            bottone = tk.Button(self.containerButtons, text="Percorso con punteggio di: " + str(punteggio), fg="black",bg="cyan", relief='ridge')
+            bottone.configure(command=lambda idx=index: self.stampaPercorso(idx))
+            #bottone.grid(column=0, row=index, pady=5)
+            self.containerButtons.window_create('end', window=bottone)
+            self.containerButtons.insert('end', '\n')
+            index += 1
 
     # def stampaPercorso(self, nodo:Nodo):
     #     #print(str(nodo), '=',self.algo.parola2)
@@ -98,21 +114,18 @@ class Window:
 
     def stampaPercorso(self, index):
         self.lista.delete(0, tk.END)
-        for elem in self.algo.list_per_trov[index]:
-            listagenitori = elem[0]
-            i = 0
-            while i < len(listagenitori):
-                genitore : Nodo = listagenitori[i]
-                self.lista.insert(tk.END, str(genitore) + ' : ' + str(genitore.algoritmo))
-                colore = self.scegliColore(genitore.algoritmo)
-                self.lista.itemconfig(tk.END, fg="#fff", bg=colore, selectbackground=colore, selectforeground="white")
-                if i != (len(listagenitori)):
-                    self.lista.insert(tk.END, "↓")
-                i += 1
+
+        listagenitori = self.algo.list_per_trov[index][0]
+        punteggio = self.algo.list_per_trov[index][1]
+        i = 0
+        while i < len(listagenitori):
+            genitore : Nodo = listagenitori[i]
             self.lista.insert(tk.END, str(genitore) + ' : ' + str(genitore.algoritmo))
             colore = self.scegliColore(genitore.algoritmo)
-            self.lista.itemconfig(tk.END, fg="#fff", bg=colore, selectbackground=colore, selectforeground="white")
-
+            self.lista.itemconfig(tk.END, fg="#000", bg=colore, selectbackground=colore, selectforeground="white")
+            if i != (len(listagenitori)-1):
+                self.lista.insert(tk.END, "↓")
+            i += 1
 
 
 
