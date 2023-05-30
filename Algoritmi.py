@@ -9,12 +9,11 @@ class Algoritmi:
                     'u', 'v', 'w', 'x', 'y', 'z']
         self.parola1 = ''
         self.parola2 = ''
-        self.diz = {}
-        self.diz_ParMet_trovate = {}
+        self.diz = {}  # tutte le parole
+        self.diz_ParMet_trovate = {}  # parole&metodo trovate associate ad una parola
         self.albero: Nodo = None
-        self.conta = 0 # TODO: NON USATO
-        self.par2_at_livello = []
-        self.list_per_trov = []  #lista poercorsi trovati
+        self.par2_at_livello = []  # parola 2 si trova al livello numero X
+        self.list_per_trov = []  # lista di X percorsi completi con punteggi
 
     def caricaDizionario(self):
         f = open('./Parole/parole_difficili.txt')  # dentro ci va il path del file
@@ -42,24 +41,24 @@ class Algoritmi:
             print(self.parola1, self.parola2)
             self.albero = Nodo(self.parola1)
 
-    def controllaParole(self):
+
+    def controllaParole(self): # feedback visualizzato nella finestra
         ritornoDizionario = ""
         if self.parola1 not in self.diz:
             ritornoDizionario = f"{self.parola1} non è nel dizionario"
         if self.parola2 not in self.diz:
             ritornoDizionario += " e \n" if ritornoDizionario != "" else ""
             ritornoDizionario += f"{self.parola2} non è nel dizionario"
+        if self.parola1 == "" or self.parola2 == "":
+            ritornoDizionario = "Completa i campi mancanti"
         if ritornoDizionario != "":
             return ritornoDizionario
-        if self.parola1 == "" or self.parola2 == "":
-            return "Completa i campi mancanti"
         if self.parola1 in self.diz and self.parola2 in self.diz:
             return ""
 
 
-
     def calcolaPercorsi(self, node: Nodo):
-        self.par2_at_livello = []
+        self.par2_at_livello = [] # )parola & livello)
         coda = [[node, 0]]
         while coda:
             for i in range(len(coda)):
@@ -94,7 +93,7 @@ class Algoritmi:
         #print('trovata ai livelli: ',self.par2_at_livello)
         #print(self.checkTrovataParola2())
 
-    def checkTrovataParola2(self):
+    def checkTrovataParola2(self): # controllo su parola due
         if self.par2_at_livello:
             return 'La parola "' + self.parola2 + '"\nsi trova al livello ' + str(self.par2_at_livello[0][1] + 1)
             # prima parola trovata
@@ -102,6 +101,7 @@ class Algoritmi:
         else:
             return 'Non è stato possibile arrivare alla\nparola "' + self.parola2 + '" in ' + str(MAX_LIVELLO+1) + ' livelli'
 
+    # ricorsiva
     def printAlbero(self, nodo: Nodo, indentazione=''): # debug stampa su terminale
         indentazione = self.parola1 + ' -> ' if indentazione == '' else indentazione
         if nodo:
@@ -109,7 +109,8 @@ class Algoritmi:
             for elem in nodo.figli:
                 self.printAlbero(elem, indentazione + ' ' + str(elem) + ' -> ')
 
-    def addPerTOLIST(self, nodo : Nodo): #funzione che aggiunge i percorsi completi trovati alla lista, ovvero quello che arrivano all parola2
+    # ricorsiva
+    def addPerTOLIST(self, nodo : Nodo): #funzione che aggiunge tutti i percorsi completi (parola1->parola2) in una lista
         if nodo:
             if self.parola2 == str(nodo):
                 punteggio, percorso_completo = nodo.algoritmo.value, []
@@ -117,16 +118,11 @@ class Algoritmi:
                     punteggio += gen.algoritmo.value # int enum
                 lista_percorso = nodo.genitori + [nodo]
                 percorso_completo = [lista_percorso,  punteggio]
-                self.list_per_trov.append(percorso_completo)
+                self.list_per_trov.append(percorso_completo) # lista di X percorsi completi con punteggi
             else:
                 for elem in nodo.figli:
                     self.addPerTOLIST(elem)
 
-
-    def aggiungiTrovate(self):
-        # trovare il nodo giusto
-        for parola, metodo in self.diz_ParMet_trovate:
-            self.albero.add_figlio(parola, metodo)
 
 # TRASFORMAZIONI PAROLE
     def anagramma(self, parola, prefisso=""):
@@ -164,7 +160,7 @@ class Algoritmi:
             parola = self.trasla(i_spazio, parola)
             i_spazio += 1
 
-    def trasla(self, i_spazio, parola):
+    def trasla(self, i_spazio, parola): # aggiungi
         listpar = list(parola)
         listpar.remove(' ')
         listpar.insert(i_spazio, ' ')
@@ -181,7 +177,7 @@ class Algoritmi:
                 self.diz_ParMet_trovate[new_par] = Metodo.TOGLI
             i_cancella += 1
 
-    def rimuovi(self, i_spazio, parola):
+    def rimuovi(self, i_spazio, parola): # togli
         listpar = list(parola)
         listpar.pop(i_spazio)
         par = ''.join(listpar)

@@ -1,6 +1,6 @@
 from enum import Enum
 
-class Metodo(Enum): #TODO: cambiare i numeri per il punteggio
+class Metodo(Enum):
     NESSUNO = 0
     TOGLI = 10
     AGGIUNGI = 16

@@ -28,7 +28,7 @@ class Window:
         self.feedback = tk.StringVar(value='')
         tk.Label(self.window, textvariable=self.feedback, fg='green3').grid(row=3, column=0, columnspan=6)
 
-        self.containerButtons = tk.Text(self.window, width=30, height=15)
+        self.containerButtons = tk.Text(self.window, width=51, height=15)
         self.containerButtons.grid(row=4, rowspan=2, column=0, columnspan=6)
 
         self.scroll = tk.Scrollbar(self.window, orient="vertical", command=self.containerButtons.yview)
@@ -36,7 +36,7 @@ class Window:
 
         self.containerButtons.configure(yscrollcommand=self.scroll.set)
 
-        self.lista = tk.Listbox(self.window, width=40)
+        self.lista = tk.Listbox(self.window, width=40, background="#fff")
         self.lista.grid(row=9, column=0, columnspan=6)
 
     def start(self):
@@ -46,8 +46,8 @@ class Window:
         self.lista.delete(0,tk.END)
         self.feedback.set('')
         print(self.txtParola1.get(), self.txtParola2.get())
-        self.algo.parola1 = self.txtParola1.get()
-        self.algo.parola2 = self.txtParola2.get()
+        self.algo.parola1 = self.txtParola1.get().strip().lower()
+        self.algo.parola2 = self.txtParola2.get().strip().lower()
         feedbackParole = self.algo.controllaParole()
 
         if feedbackParole == "":
@@ -76,68 +76,30 @@ class Window:
         self.feedback.set('')
         self.containerButtons.delete(1.0,tk.END)
         self.algo.list_per_trov=[]
-
+        self.algo.par2_at_livello = []
         return True
 
     def creaBottoniPercorsi(self):
-        ROWSPAN = 4
         index = 0
         for lista, punteggio in self.algo.list_per_trov:
-            bottone = tk.Button(self.containerButtons, text="Percorso con punteggio di: " + str(punteggio), fg="black",bg="cyan", relief='ridge')
+            bottone = tk.Button(self.containerButtons, text="Percorso con punteggio di: " + str(punteggio), fg="black", bg="cyan", relief='ridge')
             bottone.configure(command=lambda idx=index: self.stampaPercorso(idx))
-            #bottone.grid(column=0, row=index, pady=5)
             self.containerButtons.window_create('end', window=bottone)
             self.containerButtons.insert('end', '\n')
             index += 1
-
-    # def stampaPercorso(self, nodo:Nodo):
-    #     #print(str(nodo), '=',self.algo.parola2)
-    #     if str(nodo) == self.algo.parola2: #and self.lista.size() == 0:
-    #         #print(str(nodo)+'+'+str(nodo.algoritmo))
-    #         i = 0
-    #         while i < len(nodo.genitori):
-    #             genitore:Nodo = nodo.genitori[i]
-    #             self.lista.insert(tk.END, str(genitore) + ' : ' + str(genitore.algoritmo))
-    #             colore = self.scegliColore(genitore.algoritmo)
-    #             self.lista.itemconfig(tk.END, fg="#fff", bg=colore, selectbackground=colore, selectforeground="white")
-    #             if i != (len(nodo.genitori)):
-    #                 self.lista.insert(tk.END, "↓")
-    #             i += 1
-    #         self.lista.insert(tk.END, str(nodo) + ' : ' + str(nodo.algoritmo))
-    #         colore = self.scegliColore(nodo.algoritmo)
-    #         self.lista.itemconfig(tk.END, fg="#fff", bg=colore, selectbackground=colore, selectforeground="white")
-    #
-    #     else:
-    #         if nodo:
-    #             for elem in nodo.figli:
-    #                 self.stampaPercorso(elem)
 
     def stampaPercorso(self, index):
         self.lista.delete(0, tk.END)
 
         listagenitori = self.algo.list_per_trov[index][0]
-        punteggio = self.algo.list_per_trov[index][1]
+        #punteggio = self.algo.list_per_trov[index][1]
         i = 0
         while i < len(listagenitori):
             genitore : Nodo = listagenitori[i]
             self.lista.insert(tk.END, str(genitore) + ' : ' + str(genitore.algoritmo))
-            colore = self.scegliColore(genitore.algoritmo)
-            self.lista.itemconfig(tk.END, fg="#000", bg=colore, selectbackground=colore, selectforeground="white")
+            self.lista.itemconfig(tk.END, fg="#000")
             if i != (len(listagenitori)-1):
                 self.lista.insert(tk.END, "↓")
+            self.lista.itemconfig(tk.END, fg="#000")
             i += 1
 
-
-
-    def scegliColore(self, metodo:Metodo):
-        match metodo:
-            case 0:
-                return '#fff'
-            case 1:
-                return 'DarkOrchid1'
-            case 2:
-                return 'yellow'
-            case 3:
-                return 'cyan2'
-            case 4:
-                return 'red3'
