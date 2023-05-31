@@ -28,12 +28,12 @@ class Window:
         self.feedback = tk.StringVar(value='')
         tk.Label(self.window, textvariable=self.feedback, fg='green3').grid(row=3, column=0, columnspan=6)
 
-        self.containerButtons = tk.Text(self.window, width=51, height=15)
+        self.containerButtons = tk.Text(self.window, width=35, height=15)
         self.containerButtons.grid(row=4, rowspan=2, column=0, columnspan=6)
 
         self.scroll = tk.Scrollbar(self.window, orient="vertical", command=self.containerButtons.yview)
         self.scroll.grid(row=4, rowspan=2, column=5, sticky=tk.N + tk.E + tk.S)
-
+        self.containerButtons.config(state=tk.NORMAL)
         self.containerButtons.configure(yscrollcommand=self.scroll.set)
 
         self.lista = tk.Listbox(self.window, width=40, background="#fff")
@@ -51,7 +51,7 @@ class Window:
         feedbackParole = self.algo.controllaParole()
 
         if feedbackParole == "":
-            nodoInizio = Nodo(self.algo.parola1)
+            nodoInizio = Nodo(self.algo.parola1) # crea il nodo iniziale
             self.algo.calcolaPercorsi(nodoInizio)
             #self.algo.printAlbero(nodoInizio) # debug terminale
             self.algo.addPerTOLIST(nodoInizio)
@@ -69,17 +69,16 @@ class Window:
     def reset(self):
         self.txtParola1.delete(0,len(self.txtParola1.get()))
         self.txtParola2.delete(0,len(self.txtParola2.get()))
-        self.algo.albero = None
-        self.algo.parola1 = ''
-        self.algo.parola2 = ''
         self.lista.delete(0,tk.END)
         self.feedback.set('')
         self.containerButtons.delete(1.0,tk.END)
-        self.algo.list_per_trov=[]
-        self.algo.par2_at_livello = []
+        self.algo = None
+        self.algo = Algoritmi()
+        self.algo.caricaDizionario()
         return True
 
     def creaBottoniPercorsi(self):
+        self.containerButtons.delete(1.0,tk.END)
         index = 0
         for lista, punteggio in self.algo.list_per_trov:
             bottone = tk.Button(self.containerButtons, text="Percorso con punteggio di: " + str(punteggio), fg="black", bg="cyan", relief='ridge')

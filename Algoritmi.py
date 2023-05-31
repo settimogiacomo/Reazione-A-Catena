@@ -1,6 +1,6 @@
 from Metodo import Metodo
 from Nodo import Nodo
-MAX_LIVELLO = 4
+MAX_LIVELLO = 9
 
 class Algoritmi:
 
@@ -21,6 +21,67 @@ class Algoritmi:
         for l in linee:
             l = l.strip()
             self.diz[l] = len(l)
+
+# TRASFORMAZIONI PAROLE
+    def sostituisci(self, parola):
+        for i in range(len(parola)):
+            for l in self.alfabeto:
+                if l != parola[i]:
+                    new_par = list(parola)
+                    new_par[i] = l
+                    new_par = ''.join(new_par)
+                    # print(new_par)
+
+                    if new_par in self.diz and new_par not in self.diz_ParMet_trovate and new_par != parola and new_par != self.parola1:
+                        self.diz_ParMet_trovate[new_par] = Metodo.SOSTITUISCI
+
+    def aggiungi(self, parola):
+        i_spazio = 1
+        parola = ' ' + parola
+        for i in range(len(parola)):
+            for l in self.alfabeto:
+                new_par = parola.replace(' ', l)
+                # print(new_par)
+                if new_par in self.diz and new_par not in self.diz_ParMet_trovate and new_par != parola and new_par != self.parola1:
+                    self.diz_ParMet_trovate[new_par] = Metodo.AGGIUNGI
+
+            parola = self.trasla(i_spazio, parola)
+            i_spazio += 1
+
+    def trasla(self, i_spazio, parola):  # aggiungi
+        listpar = list(parola)
+        listpar.remove(' ')
+        listpar.insert(i_spazio, ' ')
+        par = ''.join(listpar)
+        return par
+
+    def togli(self, parola):
+        i_cancella = 0
+        # print(parola)
+        for i in range(len(parola)):
+            new_par = self.rimuovi(i_cancella, parola)
+            # print(new_par)
+            if new_par in self.diz and new_par not in self.diz_ParMet_trovate and new_par != parola and new_par != self.parola1:
+                self.diz_ParMet_trovate[new_par] = Metodo.TOGLI
+            i_cancella += 1
+
+    def rimuovi(self, i_spazio, parola):  # togli
+        listpar = list(parola)
+        listpar.pop(i_spazio)
+        par = ''.join(listpar)
+        return par
+
+    def anagramma(self, parola, prefisso=""):
+        if len(parola) <= 1:
+            new_par = prefisso + parola
+            if new_par in self.diz and new_par not in self.diz_ParMet_trovate and new_par != self.parola1:
+                self.diz_ParMet_trovate[new_par] = Metodo.ANAGRAMMA
+        else:
+            for i in range(len(parola)):
+                rimanenti = parola[:i] + parola[i + 1:]
+                self.anagramma(rimanenti, prefisso + parola[i])
+
+# RICHIESTA PAROLE
 
     # solo per terminale
     def chiediParole(self):
@@ -58,7 +119,7 @@ class Algoritmi:
 
 
     def calcolaPercorsi(self, node: Nodo):
-        self.par2_at_livello = [] # )parola & livello)
+        self.par2_at_livello = [] # (parola & livello)
         coda = [[node, 0]]
         while coda:
             for i in range(len(coda)):
@@ -122,63 +183,3 @@ class Algoritmi:
             else:
                 for elem in nodo.figli:
                     self.addPerTOLIST(elem)
-
-
-# TRASFORMAZIONI PAROLE
-    def anagramma(self, parola, prefisso=""):
-        if len(parola) <= 1:
-            new_par = prefisso + parola
-            if new_par in self.diz and new_par not in self.diz_ParMet_trovate and new_par != self.parola1:
-                self.diz_ParMet_trovate[new_par] = Metodo.ANAGRAMMA
-        else:
-            for i in range(len(parola)):
-                rimanenti = parola[:i] + parola[i + 1:]
-                self.anagramma(rimanenti, prefisso + parola[i])
-
-    def sostituisci(self, parola):
-        for i in range(len(parola)):
-            for l in self.alfabeto:
-                if l != parola[i]:
-                    new_par = list(parola)
-                    new_par[i] = l
-                    new_par = ''.join(new_par)
-                    #print(new_par)
-
-                    if new_par in self.diz and new_par not in self.diz_ParMet_trovate and new_par != parola and new_par != self.parola1:
-                        self.diz_ParMet_trovate[new_par] = Metodo.SOSTITUISCI
-
-    def aggiungi(self, parola):
-        i_spazio = 1
-        parola = ' ' + parola
-        for i in range(len(parola)):
-            for l in self.alfabeto:
-                new_par = parola.replace(' ', l)
-                # print(new_par)
-                if new_par in self.diz and new_par not in self.diz_ParMet_trovate and new_par != parola and new_par != self.parola1:
-                    self.diz_ParMet_trovate[new_par] = Metodo.AGGIUNGI
-
-            parola = self.trasla(i_spazio, parola)
-            i_spazio += 1
-
-    def trasla(self, i_spazio, parola): # aggiungi
-        listpar = list(parola)
-        listpar.remove(' ')
-        listpar.insert(i_spazio, ' ')
-        par = ''.join(listpar)
-        return par
-
-    def togli(self, parola):
-        i_cancella = 0
-        #print(parola)
-        for i in range(len(parola)):
-            new_par = self.rimuovi(i_cancella, parola)
-            #print(new_par)
-            if new_par in self.diz and new_par not in self.diz_ParMet_trovate and new_par != parola and new_par != self.parola1:
-                self.diz_ParMet_trovate[new_par] = Metodo.TOGLI
-            i_cancella += 1
-
-    def rimuovi(self, i_spazio, parola): # togli
-        listpar = list(parola)
-        listpar.pop(i_spazio)
-        par = ''.join(listpar)
-        return par
